@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MATH FUNNEL EXPRESS — 2 questions, votre estimation · Djibril Mindset</title>
+<style>
+/* ============================================================
+ * MATH FUNNEL EXPRESS — v2 « 2 questions » (nouveau document,
+ * distinct du simulateur détaillé v1).
+ * Tokens consommés de design-systems/reset-ultra/tokens.css
+ * (pattern officiel du DS : bloc sémantique collé avec fallbacks).
+ * ============================================================ */
+:root{
+  --bg:var(--ru-blanc-cosmique,#F7F7F4);
+  --surface:var(--ru-blanc-mineral,#EFEEE8);
+  --fg:var(--ru-noir-obsidienne,#141216);
+  --muted:var(--ru-corps-jour,#3A3642);
+  --meta:var(--ru-gris-meteorite,#6E6A72);
+  --border:var(--ru-lisere-jour,#DAD5E2);
+  --accent:var(--ru-magenta-texte-clair,#9E0349);
+  --ru-magenta:#FF2D7E;
+  --ru-magenta-texte-sombre:#FF87B4;
+  --ru-rose-intense:#C2185B;
+  --ru-violet-profond:#4A2A78;
+  --ru-vert-mineral:#5A7A62;
+  --ru-bleu-atmospherique:#4A7AA8;
+  --ru-jaune-solaire:#E8A317;
+  --ru-cta-fond:#0B0710;
+  --ru-cta-texte:#F4F2F7;
+  --r-m:14px; --r-l:18px; --r-pill:999px;
+  --font:"Bricolage","Bricolage Grotesque","Helvetica Neue",system-ui,sans-serif;
+  --mono:"Departure",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@font-face{font-family:"Bricolage";src:url("file:///Users/pardin/agence-ia/reset-ultra-galaxie/assets/fonts/bric400.woff2") format("woff2");font-weight:400}
+@font-face{font-family:"Bricolage";src:url("file:///Users/pardin/agence-ia/reset-ultra-galaxie/assets/fonts/bric800.woff2") format("woff2");font-weight:800}
+@font-face{font-family:"Departure";src:url("file:///Users/pardin/agence-ia/reset-ultra-galaxie/assets/fonts/departure.woff2") format("woff2")}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);line-height:1.5;padding:30px 20px 60px}
+.mono{font-family:var(--mono);text-transform:uppercase;letter-spacing:.14em}
+.wrap{max-width:1080px;margin:0 auto}
+.marque{font-size:11px;color:var(--accent);margin-bottom:14px}
+h1{font-weight:800;font-size:clamp(30px,4.5vw,46px);letter-spacing:-.02em;line-height:1.04}
+.sous{color:var(--muted);margin-top:10px;font-size:15.5px;max-width:64ch}
+
+/* QUESTION 1 — budget */
+.q1{margin-top:34px;background:var(--surface);border-radius:var(--r-l);padding:24px 26px}
+.qnum{font-size:11px;color:var(--accent);margin-bottom:10px}
+.qtitre{font-weight:800;font-size:19px;margin-bottom:16px}
+.budget-ligne{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap}
+.budget-gros{font-weight:800;font-size:clamp(40px,7vw,64px);letter-spacing:-.02em;font-variant-numeric:tabular-nums;min-width:190px}
+.budget-gros small{font-size:22px;color:var(--meta);font-weight:400}
+input[type=range]{flex:1;min-width:220px;accent-color:var(--ru-magenta);height:30px}
+.budget-hint{font-family:var(--mono);font-size:10px;color:var(--meta);letter-spacing:.08em;margin-top:6px}
+
+/* QUESTION 2 — objectif */
+.q2{margin-top:18px}
+.objectifs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px}
+@media(max-width:760px){.objectifs{grid-template-columns:1fr}}
+.obj{background:var(--surface);border:2px solid transparent;border-radius:var(--r-l);padding:20px 18px;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
+.obj:hover{transform:translateY(-3px);box-shadow:0 6px 18px rgba(11,7,16,.10)}
+.obj.actif{border-color:var(--ru-magenta);background:var(--surface)}
+.obj .o-emoji{font-size:26px}
+.obj .o-nom{font-weight:800;font-size:17px;margin:8px 0 4px}
+.obj .o-ligne{font-size:12.5px;color:var(--muted)}
+
+/* RÉSULTAT */
+.resultat{margin-top:30px;display:none}
+.resultat.visible{display:block;animation:apparait .5s cubic-bezier(.22,1,.36,1)}
+@keyframes apparait{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+.funnel{display:flex;flex-direction:column}
+.etage{display:grid;grid-template-columns:190px 1fr auto;gap:14px;align-items:center;background:var(--surface);border-radius:var(--r-m);padding:13px 18px;margin-bottom:9px;opacity:0;transform:translateY(14px)}
+.etage.visible{animation:monte .55s cubic-bezier(.22,1,.36,1) forwards}
+@keyframes monte{to{opacity:1;transform:none}}
+.e-nom{font-weight:800;font-size:15.5px}
+.e-sous{font-family:var(--mono);font-size:9px;color:var(--meta);letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+.e-chiffre{font-weight:800;font-size:clamp(19px,2.6vw,27px);font-variant-numeric:tabular-nums;text-align:right;min-width:110px}
+.barre-zone{height:9px;border-radius:99px;background:rgba(11,7,16,.06);overflow:hidden}
+.barre{height:100%;border-radius:99px;width:0;transition:width .9s cubic-bezier(.22,1,.36,1)}
+.badge{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:3px 9px;margin-top:6px;color:var(--fg);background:rgba(90,122,98,.16)}
+.flux{height:14px;display:flex;justify-content:center;margin:-3px 0 5px}
+.flux span{width:2px;height:14px;background:linear-gradient(var(--ru-magenta),transparent);animation:coule 1.1s linear infinite}
+@keyframes coule{from{opacity:.2}50%{opacity:1}to{opacity:.2}}
+.c1{background:var(--ru-violet-profond)} .c2{background:var(--ru-rose-intense)} .c3{background:var(--ru-magenta)}
+.c4{background:var(--ru-rose-intense)} .c5{background:var(--ru-vert-mineral)} .c6{background:var(--ru-vert-mineral)}
+.c7{background:var(--ru-jaune-solaire)}
+
+.decision{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+@media(max-width:700px){.decision{grid-template-columns:1fr}}
+@media(max-width:560px){
+  .etage{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"nom chiffre" "barre barre";row-gap:5px;padding:12px 14px}
+  .etage>div:nth-child(1){grid-area:nom}
+  .etage>div:nth-child(2){grid-area:barre}
+  .etage>div:nth-child(3){grid-area:chiffre}
+  .e-chiffre{min-width:0}
+  .budget-ligne{flex-direction:column;gap:8px}
+  .budget-gros{min-width:0}
+}
+body{overflow-x:clip}
+.carte-d{background:var(--ru-cta-fond);color:var(--ru-cta-texte);border-radius:var(--r-l);padding:16px 20px;position:relative;overflow:hidden}
+.carte-d::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--ru-magenta)}
+.carte-d .mono{font-size:9px;color:var(--ru-magenta-texte-sombre)}
+.carte-d .gros{font-weight:800;font-size:clamp(21px,3vw,30px);margin-top:5px;font-variant-numeric:tabular-nums}
+.carte-d .mini{font-size:11px;margin-top:4px;color:var(--ru-magenta-texte-sombre)}
+.carte-d.or .mini{color:var(--ru-jaune-solaire)}
+.carte-d.or::before{background:var(--ru-jaune-solaire)}
+.carte-d.or .mono{color:var(--ru-jaune-solaire)}
+.avert{margin:0 0 14px;font-size:13px;color:var(--muted);background:var(--surface);border-left:4px solid var(--ru-jaune-solaire);border-radius:10px;padding:11px 14px}
+.avert b{color:var(--fg)}
+.limites{margin-top:12px;font-size:12px;color:var(--muted);border-top:1px dashed var(--border);padding-top:10px}
+.note-boucle{margin-top:8px;font-size:12px;color:var(--muted)}
+
+/* panier optionnel (vendre direct / RDV) */
+.optionnel{margin-top:14px;display:none;align-items:center;gap:12px;flex-wrap:wrap;background:var(--surface);border-radius:var(--r-m);padding:12px 16px}
+.optionnel.visible{display:flex}
+.optionnel .lab{font-size:13px;color:var(--muted)}
+.optionnel input{width:130px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;font-family:var(--mono);font-size:14px;background:var(--bg);color:var(--fg)}
+/* mode pro */
+.pro{margin-top:26px}
+.pro details{border-top:1px dashed var(--border);padding-top:12px}
+.pro summary{cursor:pointer;font-family:var(--mono);font-size:10px;color:var(--meta);text-transform:uppercase;letter-spacing:.12em;list-style:none}
+.pro summary:hover{color:var(--accent)}
+.pro-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px 18px;margin-top:14px}
+@media(max-width:760px){.pro-grid{grid-template-columns:repeat(2,1fr)}}
+.pro-slider .lab{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:2px}
+.pro-slider .lab .val{font-family:var(--mono);color:var(--fg)}
+.pro-slider input{width:100%;accent-color:var(--ru-magenta)}
+.pro p{font-size:11px;color:var(--meta);margin-top:10px}
+.pro .couts{margin-top:12px;font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--fg)}
+.pied{margin-top:34px;display:flex;justify-content:space-between;font-family:var(--mono);font-size:9px;color:var(--meta);text-transform:uppercase;letter-spacing:.12em}
+#selftest{display:none}
+@media print{
+  .q1 input,.q2 .obj,.pro,.pied,.optionnel,.budget-hint,body::after{display:none!important}
+  .resultat{display:block!important}
+  .etage,.carte-d{break-inside:avoid}
+  body{padding:10px 6mm}
+  .avert{border-left-color:#888}
+  h1{font-size:26px}
+  .note-boucle::after{content:" — document généré le " date();color:#666}
+}
+body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);font-size:11px;background:var(--surface);padding:14px;border-radius:10px;margin-top:20px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="marque mono">Djibril Mindset · Outil de vente</div>
+  <h1>Math Funnel Express.</h1>
+  <p class="sous">Deux questions. Une estimation honnête de ce que votre budget peut vous apporter, selon ce que vous voulez obtenir.</p>
+
+  <section class="q1">
+    <div class="qnum mono">Question 1 / 2</div>
+    <div class="qtitre">Quel budget pouvez-vous mettre par mois ?</div>
+    <div class="budget-ligne">
+      <div class="budget-gros" id="budgetGros">1 500 €</div>
+      <input type="range" id="budget" min="300" max="10000" step="100" value="1500" aria-label="Budget par mois">
+    </div>
+    <div class="budget-hint">GLISSE POUR AJUSTER — C'EST TOUT CE QUI VOUS EST DEMANDÉ</div>
+  </section>
+
+  <section class="q2">
+    <div class="qnum mono">Question 2 / 2</div>
+    <div class="qtitre">Et vous voulez obtenir quoi ?</div>
+    <div class="objectifs" id="objectifs">
+      <div class="obj" data-obj="contacts">
+        <div class="o-emoji">💬</div>
+        <div class="o-nom">Des contacts</div>
+        <div class="o-ligne">Des emails / numéros de gens intéressés, à travailler ensuite.</div>
+      </div>
+      <div class="obj actif" data-obj="rdv">
+        <div class="o-emoji">📅</div>
+        <div class="o-nom">Des rendez-vous</div>
+        <div class="o-ligne">Des RDV confirmés chez vous ou au téléphone, avec des gens qui viennent.</div>
+      </div>
+      <div class="obj" data-obj="direct">
+        <div class="o-emoji">🛒</div>
+        <div class="o-nom">Vendre directement</div>
+        <div class="o-ligne">Des achats en ligne, sans rendez-vous : ils cliquent, ils commandent.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="resultat" id="resultat">
+    <p class="avert">⚠️ <b>Hypothèses de simulation, pas des résultats promis.</b> Chaque chiffre ci-dessous repose sur des hypothèses internes, ajustées en direct pendant la discussion. La ligne « prudent » montre ce qui arrive si tout coûte plus cher que prévu.</p>
+    <div class="funnel" id="funnel"></div>
+    <div class="decision" id="decision"></div>
+    <div class="optionnel" id="panierZone">
+      <span class="lab">Pour aller jusqu'au chiffre d'affaires : votre panier moyen (optionnel)</span>
+      <input type="number" id="panier" min="0" step="10" placeholder="ex. 800">
+    </div>
+    <p class="limites" id="limites"></p>
+    <p class="note-boucle" id="noteAbsences"></p>
+    <p class="note-boucle">Après 2 semaines de campagnes réelles, vos vrais chiffres remplacent ces estimations.</p>
+  </section>
+
+  <div class="pro">
+    <details>
+      <summary>⚙ Hypothèses internes (pour Djibril — ajustables en direct)</summary>
+      <div class="pro-grid" id="proGrid"></div>
+      <div class="couts" id="proCouts"></div>
+      <p>Les curseurs ci-dessus sont les hypothèses maison. Le prospect n'a pas besoin de les connaître :
+      il donne son budget et son objectif, le reste est de ton avis d'expert.</p>
+    </details>
+  </div>
+
+  <div class="pied"><span>Math Funnel Express · v2.4 — estimation en 2 questions</span><span>Djibril Mindset</span></div>
+  <pre id="selftest"></pre>
+</div>
+
+<script>
+"use strict";
+/* ============ MODÈLE — hypothèses maison (internes) ============ */
+/* Chaine média : impressions → clics → leads (CPL≈12€, médiane bande 5-20€).
+   Puis selon l'objectif :
+   - contacts : le funnel s'arrête aux contacts.
+   - rdv : leads → RDV (t1) → présents (presence) → clients (t2).
+   - direct : clics → achats (conv achat 2.5%).
+   Ancrage : chaque coût dérivé (lead, RDV, client, achat) est calculé depuis la
+   chaine lead-par-lead et calé sur la MÉDIANE des bandes internes — décision
+   Djibril 20/09 : plus jamais la borne haute par défaut (bug 50 €/client).
+   v2.4 : état dans le hash URL (lien de partage pré-rempli une fois hébergé)
+   + feuille d'impression one-pager (sans curseurs ni réglages internes).
+   v2.3 : fix carte décision (affichait coût/RDV pris sous étiquette client)
+   + fix débordement mobile <560px (grille étage en zones empilées).
+   v2.2 : coût par RDV honoré (absences intégrées) + lignes prudentes dérivées
+   des bornes HAUTES des bandes (20/30/50 €) — le prospect voit aussi le
+   scénario où tout coûte plus cher, pas seulement la médiane. */
+const HYP = {
+  cpm:12, ctr:1.25, cvr:8,
+  t1:60, presence:80, t2:65,
+  convDirect:2.5,
+};
+const BANDES = { cpl:[5,20], coutRdv:[10,30], coutClient:[30,50], coutPresent:[12,38] }; /* coutPresent derivee : bande RDV / presence mediane 80 % */
+const ETIQUETTES_PRO = [
+  {k:"cpm",  nom:"CPM (€/1000 vues)",   min:4,  max:30,  step:0.5},
+  {k:"ctr",  nom:"CTR (%)",             min:0.5,max:4,   step:0.05},
+  {k:"cvr",  nom:"Clics → contacts (%)",min:5,  max:40,  step:1},
+  {k:"t1",   nom:"Contacts → RDV (%)",  min:10, max:90,  step:5},
+  {k:"presence", nom:"RDV → présents (%)", min:50, max:95, step:5},
+  {k:"t2",   nom:"Présents → clients (%)", min:20, max:80, step:5},
+  {k:"convDirect", nom:"Clics → achat (%)", min:0.5, max:8, step:0.5},
+];
+
+function calcule(budget, objectif, panier){
+  const imp   = budget / HYP.cpm * 1000;
+  const clics = imp * HYP.ctr / 100;
+  const leads = clics * HYP.cvr / 100;
+  const cpl   = leads > 0 ? budget / leads : 0;
+  const base  = { imp, clics, leads, cpl };
+  if(objectif === "contacts") return { ...base, dernier:"leads" };
+  if(objectif === "direct"){
+    const achats = clics * HYP.convDirect / 100;
+    return { ...base, achats, coutAchat: achats>0 ? budget/achats : 0, dernier:"achats" };
+  }
+  const rdv   = leads * HYP.t1 / 100;
+  const pres  = rdv * HYP.presence / 100;
+  const cli   = pres * HYP.t2 / 100;
+  return { ...base, rdv, pres, cli,
+    coutRdv: rdv>0 ? budget/rdv : 0,
+    coutPresent: pres>0 ? budget/pres : 0,
+    budgetAbsences: budget*(1-HYP.presence/100),
+    coutClient: cli>0 ? budget/cli : 0,
+    coutClient: cli>0 ? budget/cli : 0,
+    ca: panier>0 ? cli*panier : 0,
+    dernier:"cli" };
+}
+function fmt(n, dec){ return n.toLocaleString("fr-FR",{minimumFractionDigits:dec||0, maximumFractionDigits:(dec===undefined?0:dec)}); }
+
+/* ============ ÉTAGES PAR OBJECTIF ============ */
+const ETAGES = {
+  contacts: [
+    {cle:"imp",   nom:"Personnes touchées", sous:"impressions", cls:"c1"},
+    {cle:"clics", nom:"Curieux",            sous:"clics",       cls:"c2"},
+    {cle:"leads", nom:"Contacts",           sous:"emails / numéros", cls:"c3", cout:"cpl", coutNom:"contact", ref:BANDES.cpl},
+  ],
+  rdv: [
+    {cle:"imp",   nom:"Personnes touchées", sous:"impressions", cls:"c1"},
+    {cle:"clics", nom:"Curieux",            sous:"clics",       cls:"c2"},
+    {cle:"leads", nom:"Contacts",           sous:"emails / numéros", cls:"c3", cout:"cpl", coutNom:"contact", ref:BANDES.cpl},
+    {cle:"rdv",   nom:"RDV pris",           sous:"rendez-vous", cls:"c4", cout:"coutRdv", coutNom:"RDV", ref:BANDES.coutRdv},
+    {cle:"pres",  nom:"Présents",           sous:"confirmés",   cls:"c5", cout:"coutPresent", coutNom:"RDV honoré", ref:BANDES.coutPresent},
+    {cle:"cli",   nom:"Clients",            sous:"signés",      cls:"c6", cout:"coutClient", coutNom:"client", ref:BANDES.coutClient},
+  ],
+  direct: [
+    {cle:"imp",   nom:"Personnes touchées", sous:"impressions", cls:"c1"},
+    {cle:"clics", nom:"Curieux",            sous:"clics",       cls:"c2"},
+    {cle:"achats",nom:"Acheteurs",          sous:"commandes",   cls:"c3", cout:"coutAchat", coutNom:"client", ref:BANDES.coutClient},
+  ],
+};
+
+const $=s=>document.querySelector(s);
+let budget=1500, objectif="rdv", ETAGES_DOM=[];
+function dansBande(val, b){ return val>=b[0] && val<=b[1]; }
+
+function construireFunnel(){
+  const fu=$("#funnel"); fu.innerHTML=""; ETAGES_DOM=[];
+  ETAGES[objectif].forEach((e,i)=>{
+    const div=document.createElement("div"); div.className="etage"; div.id="et-"+e.cle;
+    div.innerHTML=`<div><div class="e-nom">${e.nom}</div><div class="e-sous">${e.sous}</div></div>
+      <div><div class="barre-zone"><div class="barre ${e.cls}" id="bar-${e.cle}"></div></div><div id="bd-${e.cle}"></div></div>
+      <div class="e-chiffre" id="ch-${e.cle}"></div>`;
+    fu.appendChild(div); ETAGES_DOM.push(div);
+    if(i<ETAGES[objectif].length-1){ const f=document.createElement("div"); f.className="flux"; f.innerHTML="<span></span>"; fu.appendChild(f); }
+  });
+}
+function rendu(lecture){
+  const panier = parseFloat($("#panier").value) || 0;
+  history.replaceState(null, "", "#b="+budget+"&o="+objectif+(panier>0?"&p="+panier:""));
+  const r = calcule(budget, objectif, panier);
+  const maxImp = r.imp;
+  ETAGES[objectif].forEach(e=>{
+    const val=r[e.cle];
+    $("#ch-"+e.cle).textContent = fmt(Math.round(val));
+    $("#bar-"+e.cle).style.width = Math.max(8, Math.log1p(val)/Math.log1p(maxImp)*100)+"%";
+    const bd=$("#bd-"+e.cle);
+    if(e.cout){
+      const c=r[e.cout];
+      const ok = dansBande(c, e.ref);
+      bd.innerHTML = `<span class="badge">${fmt(c,1)} € par ${e.coutNom} — ${ok?"dans notre hypothèse interne":"hors hypothèse, on ajuste"}</span>`;
+    } else bd.innerHTML="";
+  });
+  // décision
+  const d=$("#decision");
+  const dernierNom = {contacts:"contacts", direct:"acheteurs", rdv:"clients"}[objectif];
+  const dernierVal = {contacts:r.leads, direct:r.achats, rdv:r.cli}[objectif];
+  const dernierCout= {contacts:r.cpl, direct:r.coutAchat, rdv:r.coutClient}[objectif];
+  document.getElementById("limites").textContent = {
+    contacts:"Limites du modèle : un contact est un email ou un numéro récupéré. Le RDV, le closing et le coût client ne sont pas estimés avec cet objectif.",
+    rdv:"Limites du modèle : la présence réelle et le closing dépendent de votre exécution. Le nombre de clients et le chiffre d'affaires restent des hypothèses.",
+    direct:"Limites du modèle : le taux d'achat dépend de votre page de vente. Ni RDV ni closing humain ne sont modélisés avec cet objectif."
+  }[objectif];
+  const noteAbs=$("#noteAbsences");
+  if(noteAbs) noteAbs.textContent = objectif==="rdv"
+    ? `Hypothèse interne : ${fmt(Math.round(r.rdv-r.pres))} RDV pris sur ${fmt(Math.round(r.rdv))} ne se présenteraient pas — environ ${fmt(Math.round(r.budgetAbsences))} € du budget restent en jeu. Confirmations et rappels servent à sécuriser cette part.`
+    : "";
+  const pc=$("#proCouts");
+  if(pc){
+    const items=[`contact ${fmt(r.cpl,1)} €`];
+    if(objectif==="rdv") items.push(`RDV ${fmt(r.coutRdv,1)} €`, `RDV honoré ${fmt(r.coutPresent,1)} €`, `client ${fmt(r.coutClient,1)} €`);
+    if(objectif==="direct") items.push(`achat ${fmt(r.coutAchat,1)} €`);
+    pc.textContent = "Réglage actuel → " + items.join(" · ");
+  }
+  const PRUD = { contacts:{n:budget/BANDES.cpl[1], c:BANDES.cpl[1]},
+                 rdv:{n:budget/BANDES.coutClient[1], c:BANDES.coutClient[1]},
+                 direct:{n:budget/BANDES.coutClient[1], c:BANDES.coutClient[1]} }[objectif];
+  let html = `
+    <div class="carte-d"><div class="mono">Vous obtenez / mois</div><div class="gros">${fmt(Math.round(dernierVal))} <span style="font-size:14px;font-weight:400">${dernierNom}</span></div><div class="mini">prudent : ${fmt(Math.floor(PRUD.n))}</div></div>
+    <div class="carte-d"><div class="mono">Coût par ${dernierNom.replace(/s$/,"")}</div><div class="gros">${fmt(dernierCout,1)} €</div><div class="mini">prudent : jusqu’à ${fmt(PRUD.c,0)} €${objectif==="rdv" ? ` · RDV honoré : ${fmt(r.coutPresent,1)} €` : ""}</div></div>`;
+  if(objectif==="rdv"){
+    html += r.ca>0
+      ? `<div class="carte-d or"><div class="mono">CA projeté / mois</div><div class="gros">${fmt(Math.round(r.ca))} €</div><div class="mini">${fmt(r.ca/budget,1)} € de CA pour 1 € investi — prudent : ${fmt(panier/BANDES.coutClient[1],1)} €</div></div>`
+      : `<div class="carte-d or"><div class="mono">Retour sur 1 € investi</div><div class="gros">ajoutez votre panier ↓</div></div>`;
+  } else if(objectif==="direct"){
+    html += panier>0
+      ? `<div class="carte-d or"><div class="mono">CA projeté / mois</div><div class="gros">${fmt(Math.round(panier*r.achats))} €</div><div class="mini">${fmt(panier*r.achats/budget,1)} € de CA pour 1 € investi — prudent : ${fmt(panier/BANDES.coutClient[1],1)} €</div></div>`
+      : `<div class="carte-d or"><div class="mono">Et ensuite ?</div><div class="gros">votre panier ↓</div></div>`;
+  } else {
+    html += `<div class="carte-d or"><div class="mono">Et ensuite ?</div><div class="gros">~${fmt(Math.round(r.leads*HYP.t1/100))} RDV possibles</div></div>`;
+  }
+  d.innerHTML = html;
+  if(lecture){
+    ETAGES_DOM.forEach((el,i)=>{ el.classList.remove("visible"); void el.offsetWidth;
+      el.style.animationDelay=(i*160)+"ms"; el.classList.add("visible"); });
+    $(".resultat").classList.add("visible");
+  }
+}
+function init(){
+  // Lien de partage : capturer le hash AVANT le premier rendu (rendu() l'écraserait)
+  let ETAT_PARTAGE = null;
+  try{
+    const h = new URLSearchParams(location.hash.replace(/^#/, ""));
+    if(h.get("b") || h.get("o")){
+      ETAT_PARTAGE = {
+        b: Math.min(10000, Math.max(300, parseFloat(h.get("b"))||1500)),
+        o: ["contacts","rdv","direct"].includes(h.get("o")) ? h.get("o") : "rdv",
+        p: parseFloat(h.get("p"))||0 };
+    }
+  }catch(e){/* hash illisible -> défauts */}
+  $("#budget").addEventListener("input", e=>{
+    budget = parseFloat(e.target.value);
+    $("#budgetGros").textContent = fmt(budget)+" €";
+    rendu(false);
+  });
+  $("#panier").addEventListener("input", ()=>rendu(false));
+  document.querySelectorAll(".obj").forEach(el=>{
+    el.addEventListener("click", ()=>{
+      document.querySelectorAll(".obj").forEach(x=>x.classList.remove("actif"));
+      el.classList.add("actif");
+      objectif = el.dataset.obj;
+      $("#panierZone").classList.toggle("visible", objectif!=="contacts");
+      construireFunnel(); rendu(true);
+    });
+  });
+  // mode pro
+  const pg=$("#proGrid");
+  ETIQUETTES_PRO.forEach(p=>{
+    const div=document.createElement("div"); div.className="pro-slider";
+    div.innerHTML=`<div class="lab"><span>${p.nom}</span><span class="val" id="pv-${p.k}">${HYP[p.k]}</span></div>
+      <input type="range" min="${p.min}" max="${p.max}" step="${p.step}" value="${HYP[p.k]}">`;
+    pg.appendChild(div);
+    div.querySelector("input").addEventListener("input", e=>{
+      HYP[p.k]=parseFloat(e.target.value);
+      $("#pv-"+p.k).textContent=HYP[p.k];
+      construireFunnel(); rendu(false);
+    });
+  });
+  if(ETAT_PARTAGE){
+    budget = ETAT_PARTAGE.b;
+    $("#budget").value = budget; $("#budgetGros").textContent = fmt(budget)+" €";
+    document.querySelectorAll(".obj").forEach(x=>x.classList.toggle("actif", x.dataset.obj===ETAT_PARTAGE.o));
+    objectif = ETAT_PARTAGE.o;
+    construireFunnel();
+    $("#panierZone").classList.toggle("visible", objectif!=="contacts");
+    if(ETAT_PARTAGE.p>0) $("#panier").value = ETAT_PARTAGE.p;
+  }
+  rendu(true);
+  $("#panierZone").classList.toggle("visible", objectif!=="contacts"); // défaut = rdv
+}
+init();
+
+/* ============ SELFTEST (?selftest=1) ============ */
+if(new URLSearchParams(location.search).get("selftest")=="1"){
+  document.body.classList.add("st");
+  const sc=[
+    {nom:"A_rdv_1500", v:{budget:1500, obj:"rdv", panier:800}},
+    {nom:"B_contacts_800", v:{budget:800, obj:"contacts", panier:0}},
+    {nom:"C_direct_2000_panier60", v:{budget:2000, obj:"direct", panier:60}},
+  ];
+  const out=sc.map(s=>{
+    const c=calcule(s.v.budget, s.v.obj, s.v.panier);
+    const o={scenario:s.nom, budget:s.v.budget, objectif:s.v.obj,
+      impressions:Math.round(c.imp), clics:Math.round(c.clics), contacts:Math.round(c.leads), cpl:+c.cpl.toFixed(2)};
+    if(s.v.obj==="rdv"){ Object.assign(o,{rdv:Math.round(c.rdv), cout_rdv:+c.coutRdv.toFixed(2),
+      cout_present:+c.coutPresent.toFixed(2), budget_absences:Math.round(c.budgetAbsences),
+      presents:Math.round(c.pres), clients:Math.round(c.cli), cout_client:+c.coutClient.toFixed(2), ca:s.v.panier>0?Math.round(c.ca):0}); }
+    if(s.v.obj==="direct"){ Object.assign(o,{achats:Math.round(c.achats), cout_achat:+c.coutAchat.toFixed(2),
+      ca:s.v.panier>0?Math.round(s.v.panier*c.achats):0}); }
+    return o;
+  });
+  document.getElementById("selftest").textContent=JSON.stringify(out,null,1);
+}
+</script>
+</body>
+</html>
