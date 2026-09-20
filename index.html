@@ -208,14 +208,14 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
     </details>
   </div>
 
-  <div class="pied"><span>Math Funnel Express · v2.6 — estimation en 2 questions</span><span>Djibril Mindset</span></div>
+  <div class="pied"><span>Math Funnel Express · v2.7 — estimation en 2 questions</span><span>Djibril Mindset</span></div>
   <pre id="selftest"></pre>
 </div>
 
 <script>
 "use strict";
 /* ============ MODÈLE — hypothèses maison (internes) ============ */
-/* Chaine média : impressions → clics → leads (CPL≈12€, médiane bande 5-20€).
+/* Chaine média : impressions → clics → leads (CPL≈6,4€, bande 3-10€).
    Puis selon l'objectif :
    - contacts : le funnel s'arrête aux contacts.
    - rdv : leads → RDV (t1) → présents (presence) → clients (t2).
@@ -223,6 +223,10 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
    Ancrage : chaque coût dérivé (lead, RDV, client, achat) est calculé depuis la
    chaine lead-par-lead et calé sur la MÉDIANE des bandes internes — décision
    Djibril 20/09 : plus jamais la borne haute par défaut (bug 50 €/client).
+   v2.7 (Djibril 20/09 soir) : bande CPL média 3-10 € (coût maison, sans marge),
+   défaut 6,4 € ; RDV DÉCOUPLÉ du CPL (t1 20 % → ~32 € ≈ 5x le CPL) car le RDV
+   porte le service ; bandes dérivées recâblées (RDV 15-50, présent 19-63,
+   client 38-125) ; trajectoire froide contacts à 10 %.
    v2.6 (retour Djibril 20/09 soir) : signature ramenée de 52 % à 40 % des RDV
    (t2 65->50, demande explicite -10/-15 pts) ; extrapolation contacts en 2
    trajectoires (froid ~20 % vs parcours complet) — les 3 rubriques ne montrent
@@ -239,11 +243,11 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
    des bornes HAUTES des bandes (20/30/50 €) — le prospect voit aussi le
    scénario où tout coûte plus cher, pas seulement la médiane. */
 const HYP = {
-  cpm:12, ctr:1.25, cvr:9,
-  t1:60, presence:80, t2:50,
+  cpm:12, ctr:1.25, cvr:15,
+  t1:20, presence:80, t2:50,
   convDirect:2,
 };
-const BANDES = { cpl:[5,20], coutRdv:[10,30], coutClient:[30,50], coutPresent:[12,38] }; /* coutPresent derivee : bande RDV / presence mediane 80 % */
+const BANDES = { cpl:[3,10], coutRdv:[15,50], coutClient:[38,125], coutPresent:[19,63] }; /* coutPresent derivee : bande RDV / presence mediane 80 % */
 const ETIQUETTES_PRO = [
   {k:"cpm",  nom:"CPM (€/1000 vues)",   min:4,  max:30,  step:0.5},
   {k:"ctr",  nom:"CTR (%)",             min:0.5,max:4,   step:0.05},
@@ -368,9 +372,9 @@ function rendu(lecture){
       ? `<div class="carte-d or"><div class="mono">CA projeté / mois</div><div class="gros">${fmt(Math.round(panier*r.achats))} €</div><div class="mini">${fmt(panier*r.achats/budget,1)} € de CA pour 1 € investi — prudent : ${fmt(panier/BANDES.coutClient[1],1)} €</div></div>`
       : `<div class="carte-d or"><div class="mono">Et ensuite ?</div><div class="gros">votre panier ↓</div></div>`;
   } else {
-    const tFroid = r.leads*0.20*HYP.presence/100*HYP.t2/100;
+    const tFroid = r.leads*0.10*HYP.presence/100*HYP.t2/100;
     const tComplet = r.leads*HYP.t1/100*HYP.presence/100*HYP.t2/100;
-    html += `<div class="carte-d or"><div class="mono">Et ensuite ?</div><div class="gros">~${fmt(Math.round(r.leads*0.20))} RDV si travaillés à froid</div><div class="mini">à froid (~20 %) : ~${fmt(Math.round(tFroid))} clients ≈ ${fmt(Math.round(tFroid*panier))} € · parcours complet : ~${fmt(Math.round(tComplet))} clients ≈ ${fmt(Math.round(tComplet*panier))} €</div></div>`;
+    html += `<div class="carte-d or"><div class="mono">Et ensuite ?</div><div class="gros">~${fmt(Math.round(r.leads*0.10))} RDV si travaillés à froid</div><div class="mini">à froid (~10 %) : ~${fmt(Math.round(tFroid))} clients ≈ ${fmt(Math.round(tFroid*panier))} € · parcours complet : ~${fmt(Math.round(tComplet))} clients ≈ ${fmt(Math.round(tComplet*panier))} €</div></div>`;
   }
   d.innerHTML = html;
   if(lecture){
