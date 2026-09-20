@@ -208,7 +208,7 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
     </details>
   </div>
 
-  <div class="pied"><span>Math Funnel Express · v2.7 — estimation en 2 questions</span><span>Djibril Mindset</span></div>
+  <div class="pied"><span>Math Funnel Express · v2.9 — estimation en 2 questions</span><span>Djibril Mindset</span></div>
   <pre id="selftest"></pre>
 </div>
 
@@ -223,6 +223,10 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
    Ancrage : chaque coût dérivé (lead, RDV, client, achat) est calculé depuis la
    chaine lead-par-lead et calé sur la MÉDIANE des bandes internes — décision
    Djibril 20/09 : plus jamais la borne haute par défaut (bug 50 €/client).
+   v2.9 (Djibril 20/09 soir) : vente directe = VENTE PUBLIC pure (page de vente,
+   zéro setting) — bande achat dédiée 30-60 € (défaut 48 €), prudent alignée 60.
+   v2.8 (Djibril 20/09 soir) : LA carte = coût par RDV (plus le client) — bande
+   demandée 15-30 € (t1 25 % → 25,6 €) ; client repassé en mini-ligne.
    v2.7 (Djibril 20/09 soir) : bande CPL média 3-10 € (coût maison, sans marge),
    défaut 6,4 € ; RDV DÉCOUPLÉ du CPL (t1 20 % → ~32 € ≈ 5x le CPL) car le RDV
    porte le service ; bandes dérivées recâblées (RDV 15-50, présent 19-63,
@@ -244,10 +248,10 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
    scénario où tout coûte plus cher, pas seulement la médiane. */
 const HYP = {
   cpm:12, ctr:1.25, cvr:15,
-  t1:20, presence:80, t2:50,
+  t1:25, presence:80, t2:50,
   convDirect:2,
 };
-const BANDES = { cpl:[3,10], coutRdv:[15,50], coutClient:[38,125], coutPresent:[19,63] }; /* coutPresent derivee : bande RDV / presence mediane 80 % */
+const BANDES = { cpl:[3,10], coutRdv:[15,30], coutClient:[38,75], coutPresent:[19,38], coutAchat:[30,60] }; /* coutPresent derivee : bande RDV / presence mediane 80 % */
 const ETIQUETTES_PRO = [
   {k:"cpm",  nom:"CPM (€/1000 vues)",   min:4,  max:30,  step:0.5},
   {k:"ctr",  nom:"CTR (%)",             min:0.5,max:4,   step:0.05},
@@ -301,7 +305,7 @@ const ETAGES = {
   direct: [
     {cle:"imp",   nom:"Personnes touchées", sous:"impressions", cls:"c1"},
     {cle:"clics", nom:"Curieux",            sous:"clics",       cls:"c2"},
-    {cle:"achats",nom:"Acheteurs",          sous:"commandes",   cls:"c3", cout:"coutAchat", coutNom:"client", ref:BANDES.coutClient},
+    {cle:"achats",nom:"Acheteurs",          sous:"commandes",   cls:"c3", cout:"coutAchat", coutNom:"achat", ref:BANDES.coutAchat},
   ],
 };
 
@@ -359,10 +363,10 @@ function rendu(lecture){
   }
   const PRUD = { contacts:{n:budget/BANDES.cpl[1], c:BANDES.cpl[1]},
                  rdv:{n:budget/BANDES.coutClient[1], c:BANDES.coutClient[1]},
-                 direct:{n:budget/BANDES.coutClient[1], c:BANDES.coutClient[1]} }[objectif];
+                 direct:{n:budget/BANDES.coutAchat[1], c:BANDES.coutAchat[1]} }[objectif];
   let html = `
     <div class="carte-d"><div class="mono">Vous obtenez / mois</div><div class="gros">${fmt(Math.round(dernierVal))} <span style="font-size:14px;font-weight:400">${dernierNom}</span></div><div class="mini">prudent : ${fmt(Math.floor(PRUD.n))}</div></div>
-    <div class="carte-d"><div class="mono">Coût par ${dernierNom.replace(/s$/,"")}</div><div class="gros">${fmt(dernierCout,1)} €</div><div class="mini">prudent : jusqu’à ${fmt(PRUD.c,0)} €${objectif==="rdv" ? ` · RDV honoré : ${fmt(r.coutPresent,1)} €` : ""}</div></div>`;
+    <div class="carte-d"><div class="mono">Coût par ${objectif==="rdv" ? "RDV" : dernierNom.replace(/s$/,"")}</div><div class="gros">${fmt(objectif==="rdv" ? r.coutRdv : dernierCout,1)} €</div><div class="mini">prudent : jusqu’à ${fmt(objectif==="rdv" ? BANDES.coutRdv[1] : PRUD.c,0)} €${objectif==="rdv" ? ` · RDV honoré : ${fmt(r.coutPresent,1)} € · client : ${fmt(r.coutClient,1)} €` : ""}</div></div>`;
   if(objectif==="rdv"){
     html += r.ca>0
       ? `<div class="carte-d or"><div class="mono">CA projeté / mois</div><div class="gros">${fmt(Math.round(r.ca))} €</div><div class="mini">${fmt(r.ca/budget,1)} € de CA pour 1 € investi — prudent : ${fmt(panier/BANDES.coutClient[1],1)} €</div></div>`
