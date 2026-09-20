@@ -184,8 +184,8 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
     <div class="funnel" id="funnel"></div>
     <div class="decision" id="decision"></div>
     <div class="optionnel" id="panierZone">
-      <span class="lab">Pour aller jusqu'au chiffre d'affaires : votre panier moyen (optionnel)</span>
-      <input type="number" id="panier" min="0" step="10" placeholder="ex. 800">
+      <span class="lab">Votre panier moyen (pré-rempli à 2 000 € — ajustez-le, tout le chiffre suit)</span>
+      <input type="number" id="panier" min="0" step="10" value="2000" placeholder="ex. 2000">
     </div>
     <p class="limites" id="limites"></p>
     <p class="note-boucle" id="noteAbsences"></p>
@@ -202,7 +202,7 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
     </details>
   </div>
 
-  <div class="pied"><span>Math Funnel Express · v2.4 — estimation en 2 questions</span><span>Djibril Mindset</span></div>
+  <div class="pied"><span>Math Funnel Express · v2.5 — estimation en 2 questions</span><span>Djibril Mindset</span></div>
   <pre id="selftest"></pre>
 </div>
 
@@ -217,6 +217,9 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
    Ancrage : chaque coût dérivé (lead, RDV, client, achat) est calculé depuis la
    chaine lead-par-lead et calé sur la MÉDIANE des bandes internes — décision
    Djibril 20/09 : plus jamais la borne haute par défaut (bug 50 €/client).
+   v2.5 : diffusion ÉCOLE — panier pré-rempli 2 000 € (paniers réels des clients
+   2-3 k, décision Djibril 20/09) : le CA devient visible d'emblée en RDV/direct,
+   et l'objectif contacts affiche le montant possible (extrapolation étiquetée).
    v2.4 : état dans le hash URL (lien de partage pré-rempli une fois hébergé)
    + feuille d'impression one-pager (sans curseurs ni réglages internes).
    v2.3 : fix carte décision (affichait coût/RDV pris sous étiquette client)
@@ -324,7 +327,7 @@ function rendu(lecture){
   const dernierVal = {contacts:r.leads, direct:r.achats, rdv:r.cli}[objectif];
   const dernierCout= {contacts:r.cpl, direct:r.coutAchat, rdv:r.coutClient}[objectif];
   document.getElementById("limites").textContent = {
-    contacts:"Limites du modèle : un contact est un email ou un numéro récupéré. Le RDV, le closing et le coût client ne sont pas estimés avec cet objectif.",
+    contacts:"Limites du modèle : un contact est un email ou un numéro récupéré. Le montant affiché est une extrapolation : ces chiffres ne se réalisent que si ces contacts suivent le parcours complet.",
     rdv:"Limites du modèle : la présence réelle et le closing dépendent de votre exécution. Le nombre de clients et le chiffre d'affaires restent des hypothèses.",
     direct:"Limites du modèle : le taux d'achat dépend de votre page de vente. Ni RDV ni closing humain ne sont modélisés avec cet objectif."
   }[objectif];
@@ -354,7 +357,8 @@ function rendu(lecture){
       ? `<div class="carte-d or"><div class="mono">CA projeté / mois</div><div class="gros">${fmt(Math.round(panier*r.achats))} €</div><div class="mini">${fmt(panier*r.achats/budget,1)} € de CA pour 1 € investi — prudent : ${fmt(panier/BANDES.coutClient[1],1)} €</div></div>`
       : `<div class="carte-d or"><div class="mono">Et ensuite ?</div><div class="gros">votre panier ↓</div></div>`;
   } else {
-    html += `<div class="carte-d or"><div class="mono">Et ensuite ?</div><div class="gros">~${fmt(Math.round(r.leads*HYP.t1/100))} RDV possibles</div></div>`;
+    const cliPot = r.leads*HYP.t1/100*HYP.presence/100*HYP.t2/100;
+    html += `<div class="carte-d or"><div class="mono">Et ensuite ?</div><div class="gros">~${fmt(Math.round(r.leads*HYP.t1/100))} RDV possibles</div><div class="mini">si panier ${fmt(panier)} € : ~${fmt(Math.round(cliPot*panier))} €/mois possibles</div></div>`;
   }
   d.innerHTML = html;
   if(lecture){
@@ -403,14 +407,14 @@ function init(){
       construireFunnel(); rendu(false);
     });
   });
+  construireFunnel(); // TOUJOURS : construire AVANT tout rendu (bug v2.5 : absent sans hash)
   if(ETAT_PARTAGE){
     budget = ETAT_PARTAGE.b;
     $("#budget").value = budget; $("#budgetGros").textContent = fmt(budget)+" €";
     document.querySelectorAll(".obj").forEach(x=>x.classList.toggle("actif", x.dataset.obj===ETAT_PARTAGE.o));
     objectif = ETAT_PARTAGE.o;
-    construireFunnel();
-    $("#panierZone").classList.toggle("visible", objectif!=="contacts");
     if(ETAT_PARTAGE.p>0) $("#panier").value = ETAT_PARTAGE.p;
+    construireFunnel(); // reconstruire pour les bons étages
   }
   rendu(true);
   $("#panierZone").classList.toggle("visible", objectif!=="contacts"); // défaut = rdv
