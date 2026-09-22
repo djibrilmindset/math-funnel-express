@@ -208,7 +208,7 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
     </details>
   </div>
 
-  <div class="pied"><span>Math Funnel Express · v2.9 — estimation en 2 questions</span><span>Djibril Mindset</span></div>
+  <div class="pied"><span>Math Funnel Express · v2.10 — estimation en 2 questions</span><span>Djibril Mindset</span></div>
   <pre id="selftest"></pre>
 </div>
 
@@ -223,6 +223,11 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
    Ancrage : chaque coût dérivé (lead, RDV, client, achat) est calculé depuis la
    chaine lead-par-lead et calé sur la MÉDIANE des bandes internes — décision
    Djibril 20/09 : plus jamais la borne haute par défaut (bug 50 €/client).
+   v2.10 (23/09) : réalignement CALIBRATION.md / skill simulateur-funnel —
+   t1 25→20 % (calibre v2.7 : RDV DÉCOUPLÉ du CPL, ~32 € ≈ 5× le CPL) et
+   t2 50→40 % (règle doctrine « signature 40 % des RDV honorés » — le code de
+   v2.6 annonçait 40 % mais portait encore 50). Aucune campagne mesurée à ce
+   jour : la règle doctrine prime sur l'hypothèse interne. Journal : CALIBRATION.md.
    v2.9 (Djibril 20/09 soir) : vente directe = VENTE PUBLIC pure (page de vente,
    zéro setting) — bande achat dédiée 30-60 € (défaut 48 €), prudent alignée 60.
    v2.8 (Djibril 20/09 soir) : LA carte = coût par RDV (plus le client) — bande
@@ -248,7 +253,7 @@ body.st #selftest{display:block;white-space:pre-wrap;font-family:var(--mono);fon
    scénario où tout coûte plus cher, pas seulement la médiane. */
 const HYP = {
   cpm:12, ctr:1.25, cvr:15,
-  t1:25, presence:80, t2:50,
+  t1:20, presence:80, t2:40,
   convDirect:2,
 };
 const BANDES = { cpl:[3,10], coutRdv:[15,30], coutClient:[38,75], coutPresent:[19,38], coutAchat:[30,60] }; /* coutPresent derivee : bande RDV / presence mediane 80 % */
